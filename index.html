@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Newton Cradle with Hearts 💖</title>
+  <meta name="description" content="A fun dynamic Newton Cradle animation with hearts, glowing particles, and name input. Create personalized swinging balls with hearts.">
+  <meta name="keywords" content="Newton Cradle, Heart Animation, Particles, Save as Video, Fun Animation">
+  <meta name="author" content="BUSHRA CH">
+  <style>
+    html { font-size: 62.5%; }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Bungee Spice", cursive; }
+    body {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      background-color: #191825;
+      overflow: hidden;
+    }
+
+    h1 {
+      margin-top: 20px;
+      text-align: center;
+      color: #f6f6f6;
+      font-size: 3rem;
+    }
+
+    .input-box {
+      margin: 20px auto;
+      text-align: center;
+    }
+    .input-box input {
+      color: #03434e;
+      text-shadow:2px 2px 5px #0fa3ab;
+      padding: 10px;
+      font-size: 2rem;
+      border-radius: 50px;
+      border: 2px solid #d606ba;
+       box-shadow: 0 0 20px rgb(12, 245, 214);
+      outline: none;
+      text-align: center;
+      animation:border 1s ease-in infinite ;
+    }
+      @keyframes border {
+     from {text-shadow:2px 2px 5px #f0ff17;}
+  to {text-shadow:2px 2px 5px #23f4ff;}
+
+     } 
+    /* Cradle */
+    .cradle {
+      width: auto;
+      height: 50rem;
+      background-color: transparent;
+      border-top: 1rem solid #fff2f2;
+      border-radius: 0.7rem;
+      display: flex;
+      justify-content: center;
+      gap: 5rem;
+      padding: 0 2rem;
+    }
+
+    .ball {
+      width: 0.5rem;
+      height: 18rem;
+      background-color: #ffffff;
+      position: relative;
+    }
+
+    .ball::before {
+      content: attr(data-letter);
+      position: absolute;
+      top: 100%;
+      left: -2.6rem;
+      width: 5.2rem;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      color: #65e8ff;
+      font-size: 2.5rem;
+      text-align: center;
+      line-height: 5.2rem;
+      font-weight: bold;
+
+      background-color: transparent;
+      border: 3px solid var(--bg, #ff004d);
+      animation: glow 1.5s ease infinite;
+    }
+
+    @keyframes glow {
+      0%   { box-shadow: 0 0 10px var(--bg, #ff004d); }
+      50%  { box-shadow: 0 0 20px var(--bg, #ff004d); }
+      100% { box-shadow: 0 0 10px var(--bg, #ff004d); }
+    }
+
+    /* Swing animations */
+    .heart-swing {
+      animation: single-heart-swing 2s ease-in-out infinite;
+      transform-origin: top center;
+    }
+    @keyframes single-heart-swing {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(20deg); }
+      75% { transform: rotate(-20deg); }
+    }
+
+    /* Canvas for particles */
+    #particles {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: -1;
+    }
+
+    /* Save button */
+    #saveBtn {
+      position: fixed;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 24px;
+      font-size: 1.8rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: linear-gradient(45deg, #ff004d, #8a2be2);
+      color: #fff;
+      box-shadow: 0 0 15px rgb(12, 245, 214);
+      transition: 0.3s;
+      z-index: 10;
+    }
+    #saveBtn:hover {
+      transform: translateX(-50%) scale(1.1);
+      background: linear-gradient(45deg, #ff1493, #33bdcc);
+    }
+    /* Hover glow effect for all balls */
+.ball::before:hover {
+  box-shadow: 0 0 25px var(--bg), 0 0 50px var(--bg);
+  transform: scale(1.2);
+  transition: 0.3s ease;
+}
+  </style>
+</head>
+<body>
+  <canvas id="particles"></canvas>
+
+  <h1> My Name 👇</h1>
+
+  <div class="input-box">
+    <input type="text" id="nameInput" placeholder="Enter your name">
+  </div>
+
+  <div class="cradle" id="cradle"></div>
+
+  <button id="saveBtn">💾 Save as Image</button>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script>
+    const input = document.getElementById("nameInput");
+    const cradle = document.getElementById("cradle");
+
+    const colors = ["#ff004d", "#ff7f00", "#ffee00", "#33cc33", "#00aaff", "#8a2be2", "#ff1493"];
+
+    function createBalls(name) {
+      cradle.innerHTML = "";
+      if (name.length === 0) {
+        const ball = document.createElement("div");
+        ball.classList.add("ball", "heart-swing");
+        ball.setAttribute("data-letter", "❤");
+        ball.style.setProperty("--bg", colors[0]);
+        cradle.appendChild(ball);
+      } else {
+        for (let i = 0; i < name.length; i++) {
+          const ball = document.createElement("div");
+          ball.classList.add("ball");
+          if (name[i] === " ") {
+            ball.setAttribute("data-letter", "❤");
+          } else {
+            ball.setAttribute("data-letter", name[i]);
+          }
+          const color = colors[i % colors.length];
+          ball.style.setProperty("--bg", color);
+          cradle.appendChild(ball);
+        }
+      }
+    }
+
+    createBalls("");
+
+    input.addEventListener("input", () => {
+      const name = input.value.toUpperCase();
+      createBalls(name);
+    });
+
+    // Particle Background
+    const canvas = document.getElementById("particles");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let particlesArray = [];
+    const particleCount = 100;
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 3 + 1;
+        this.speedX = (Math.random() - 0.5) * 1;
+        this.speedY = (Math.random() - 0.5) * 1;
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+      }
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+    }
+
+    function initParticles() {
+      particlesArray = [];
+      for (let i = 0; i < particleCount; i++) {
+        particlesArray.push(new Particle());
+      }
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particlesArray.forEach(p => {
+        p.update();
+        p.draw();
+      });
+      requestAnimationFrame(animateParticles);
+    }
+
+    initParticles();
+    animateParticles();
+
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initParticles();
+    });
+
+    // Save as Image
+    document.getElementById("saveBtn").addEventListener("click", () => {
+      html2canvas(cradle).then(canvas => {
+        const link = document.createElement("a");
+        link.download = "cradle.png";
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    });
+    input.addEventListener("input", () => {
+  const name = input.value.toUpperCase();
+  createBalls(name);
+
+  // Change particle colors based on first letter
+  if (name.length > 0) {
+    const charCode = name.charCodeAt(0);
+    particlesArray.forEach(p => {
+      p.color = colors[charCode % colors.length];
+    });
+  }
+});
+
+  </script>
+</body>
+</html>
